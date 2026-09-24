@@ -1,0 +1,6 @@
+SECRET_DO_NOT_SHARE.txt
+*.csv
+*.zip
+gen.py
+prepare.py
+grade.py
