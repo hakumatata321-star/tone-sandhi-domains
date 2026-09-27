@@ -87,6 +87,15 @@ def sandhi(domains, tone):
     return out
 
 
+def boundaries(domains, n):
+    def size(node):
+        return 1 if isinstance(node, int) else size(node[0]) + size(node[1])
+    cut, pos = set(), 0
+    for d in domains[:-1]:
+        pos += size(d); cut.add(pos - 1)
+    return [1 if i in cut else 0 for i in range(n - 1)]
+
+
 def speaker_utterances(key, s):
     forms, cls, ltone = lexicon(key)
     Bs, theta_s = speaker(key, s, bindings(key))
@@ -98,7 +107,8 @@ def speaker_utterances(key, s):
         cseq = [int(cls[j]) for j in idx]; tseq = [int(ltone[j]) for j in idx]
         z = float(rng.standard_normal())
         dur = n * MS_PER_SYLL * float(np.exp(-0.10 * z + DUR_NOISE * rng.standard_normal()))
-        surf = sandhi(bracket(cseq, Bs, theta_s - RATE_SHIFT * z), tseq)
+        dom = bracket(cseq, Bs, theta_s - RATE_SHIFT * z)
+        surf = sandhi(dom, tseq)
         out.append({"case_id": "u_" + kid(key, "utterance", s, k), "speaker_id": sid, "syll": [forms[j] for j in idx], "cls": cseq,
-                    "under": tseq, "surface": surf, "duration_ms": int(round(dur))})
+                    "under": tseq, "surface": surf, "boundaries": boundaries(dom, n), "duration_ms": int(round(dur))})
     return out

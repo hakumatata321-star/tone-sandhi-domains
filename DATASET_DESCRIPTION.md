@@ -2,7 +2,7 @@
 
 ## Overview
 
-This dataset contains 12,000 synthetic utterances from 1,000 speakers, built to study Mandarin-style third-tone sandhi over hidden prosodic domains. Each utterance is a string of invented syllables with a class tag and a lexical tone for every syllable, a speaker, a recorded duration, and the surface tones produced once the sandhi rule has applied inside each prosodic domain.
+This dataset contains 12,000 synthetic utterances from 1,000 speakers, built to study Mandarin-style third-tone sandhi over hidden prosodic domains. Each utterance is a string of invented syllables with a class tag and a lexical tone for every syllable, a speaker, a recorded duration, the surface tones produced once the sandhi rule has applied inside each prosodic domain, and the true domain boundaries.
 
 Nothing here is Mandarin. The syllables are spelled like pinyin, but they are invented, and their tones, classes, grouping strengths and speaker differences come from the generator `gen.py`, included in this package, whose draws are HMAC-SHA256 keyed to a withheld 256-bit secret. Without the secret, no part of the release can be regenerated or matched against any lexicon, corpus or speech archive.
 
@@ -12,6 +12,7 @@ Nothing here is Mandarin. The syllables are spelled like pinyin, but they are in
 - 10 to 20 syllables per utterance.
 - 8 syllable classes and 5 lexical tones (1 to 4, and 0 for a neutral tone).
 - 55,753 contested sites, where a third tone is followed by another third tone; the sandhi applied at 57.7 percent of them.
+- 167,691 gaps between adjacent syllables, 34.6 percent of them prosodic domain boundaries.
 - Recorded durations from 1,512 to 6,595 milliseconds.
 - A speaker is the independent unit.
 
@@ -28,7 +29,7 @@ The recorded duration is the number of syllables times a per-syllable time set b
 The uploaded ZIP is flat and contains exactly these six files at its root:
 
 - `utterances.csv`: one row per utterance: `case_id`, `speaker_id`, `n_syllables`, `syllables`, `classes`, `lexical_tones` (each sequence space-separated), `duration_ms`.
-- `surface.csv`: one creator-side row per utterance: `case_id`, `surface_tones`, the tones after sandhi, aligned with the syllables; used by `prepare.py`, which publishes them only for training utterances and for five support utterances of each test speaker.
+- `surface.csv`: one creator-side row per utterance: `case_id`, `surface_tones`, the tones after sandhi, aligned with the syllables, and `boundaries`, one 0 or 1 per gap between adjacent syllables, 1 where a prosodic domain boundary falls; used by `prepare.py`, which publishes surface tones only for training utterances and for five support utterances of each test speaker, and never publishes boundaries.
 - `gen.py`: the generator that produced every file here, without its secret.
 - `LICENSE`: CC BY 4.0 notice and licence URL.
 - `DATASET_DESCRIPTION.md`: this description, shipped inside the archive so the card and the data cannot drift apart.
